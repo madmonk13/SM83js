@@ -18,11 +18,18 @@
 <body>
   <canvas id="screen2d" width="160" height="144"></canvas>
 
-  <!-- Full-screen touch surface: the d-pad half, then B and A side by side. -->
+  <!-- Full-screen touch surface: the d-pad half, and the button half with A
+     over B (main.js places the split and the zone outlines). -->
   <div id="surface">
-    <div class="zone joy"><div class="hint"><b>D-pad</b><span>Touch &amp; drag on this side</span></div></div>
-    <div class="zone btn-b"><div class="hint"><b>B</b><span>Tap</span></div></div>
-    <div class="zone btn-a"><div class="hint"><b>A</b><span>Tap</span></div></div>
+    <div class="zone joy">
+      <div class="box stick"><b>D-pad</b><small>Drag</small></div>
+      <div class="hint"><b>D-pad</b><span>Touch &amp; drag on this side</span></div>
+    </div>
+    <div class="zone fire">
+      <div class="box a"><b>A</b><small>Tap</small></div>
+      <div class="box b"><b>B</b><small>Tap</small></div>
+      <div class="hint"><b>A · B</b><span>Top half is A, bottom half is B</span></div>
+    </div>
   </div>
   <div id="ripples"></div>
   <div id="dpad">
@@ -66,6 +73,11 @@
           <input id="dpadSize" type="range" min="90" max="220" step="10"></label>
         <label class="switch" id="hapticsRow"><span>Vibrate on A and B</span><input id="haptics" type="checkbox"><i></i></label>
         <label class="switch"><span>Show zone hints</span><input id="hints" type="checkbox"><i></i></label>
+        <label class="switch"><span>Show control zones<small>Outline the area for each control</small></span><input id="zones" type="checkbox"><i></i></label>
+        <label class="field slider"><span>Zone opacity <output id="zoneOpacityVal"></output></span>
+          <input id="zoneOpacity" type="range" min="10" max="100" step="5"></label>
+        <label class="field slider"><span>Zone overlap <output id="zoneOverlapVal"></output></span>
+          <input id="zoneOverlap" type="range" min="0" max="100" step="5"></label>
       </section>
 
       <section class="sec-sound">

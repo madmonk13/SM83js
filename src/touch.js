@@ -4,10 +4,9 @@
 // from the finger's angle around that origin, even past the d-pad's rim, so
 // direction changes register without returning to center.
 //
-// Button half: split side by side into B (toward the middle of the screen)
-// and A (toward the edge), as on the Game Boy, where A sits up and to the
-// right of B. Each press is held for at least MIN_PRESS so a quick tap is
-// never shorter than a frame the game polls.
+// Button half: A stacked over B (A sits higher on the Game Boy too), split
+// at splitY, which the page layout sets. Each press is held for at least
+// MIN_PRESS so a quick tap is never shorter than a frame the game polls.
 
 const UP = 0x10, DOWN = 0x20, LEFT = 0x40, RIGHT = 0x80;
 const MIN_PRESS = 70;     // ms
@@ -24,6 +23,7 @@ export class TouchControls {
     this.knob = dpad.querySelector('.knob');
     this.ripples = ripples;
     this.leftHanded = false;
+    this.splitY = null;       // client y dividing A (above) from B (below); null = the surface's middle
     this.eightWay = true;
     this.size = 140;
     this.haptics = true;
@@ -58,10 +58,11 @@ export class TouchControls {
     return this.leftHanded ? !leftHalf : leftHalf;
   }
 
-  // On the button half, the outer side (toward the screen edge) is A.
-  isA(x) {
-    const w = this.surface.clientWidth;
-    return this.leftHanded ? x < w / 4 : x >= (w * 3) / 4;
+  // On the button half, A is above the split and B below.
+  isA(y) {
+    if (this.splitY !== null) return y < this.splitY;
+    const r = this.surface.getBoundingClientRect();
+    return y < r.top + r.height / 2;
   }
 
   // The button under a point, judged by where the buttons are laid out now.
@@ -94,7 +95,7 @@ export class TouchControls {
       this.knob.style.transform = 'translate(-50%, -50%)';
       this.dpad.className = 'show';
     } else {
-      if (this.isA(e.clientX)) { this.aIds.add(e.pointerId); this.aUntil = performance.now() + MIN_PRESS; }
+      if (this.isA(e.clientY)) { this.aIds.add(e.pointerId); this.aUntil = performance.now() + MIN_PRESS; }
       else { this.bIds.add(e.pointerId); this.bUntil = performance.now() + MIN_PRESS; }
       this.ripple(e.clientX, e.clientY);
       if (this.haptics && navigator.vibrate) navigator.vibrate(8);

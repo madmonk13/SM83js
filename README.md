@@ -41,9 +41,14 @@ fine). No ROMs are included.
 ## Controls
 
 - **Touch:** the left half is a d-pad that appears where your finger lands.
-  The right half is B (toward the middle) and A (toward the edge), as on the
-  Game Boy. Select and Start are in the top bar. Left-handed mode swaps the
-  sides.
+  The right half is A stacked over B (A sits higher on the Game Boy too).
+  Select and Start are in the top bar. Left-handed mode swaps the sides.
+- **Control zones** (as in z80js): faint outlines show each control's area,
+  with adjustable opacity. The zone overlap slider sets how far the zones
+  reach over the picture: in portrait they sit in the band below it, starting
+  that share of the picture's height up from its bottom edge, with A over B;
+  in landscape A takes the top half and B the bottom, and the outlines stop
+  short of the middle by that share of the picture's width.
 - **Keyboard:** arrows or WASD; X or K for A; Z or J for B; Return for
   Start; Shift or Backspace for Select; P to pause.
 - **Gamepad:** d-pad or left stick; the right face button is A and the bottom

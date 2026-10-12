@@ -56,16 +56,9 @@ html, body {
   touch-action: none;
 }
 .zone { position: relative; flex: 1; }
-.zone.joy { flex: 2; }
-/* Zone dividers start below the picture (main.js sets --divider-top), so they
-   never cross the game. */
-.zone + .zone::before {
-  content: ''; position: absolute; left: -1px; bottom: 0;
-  top: var(--divider-top, 0);
-  border-left: 1px dashed rgba(255, 255, 255, 0.08);
-}
+.zone + .zone { border-left: 1px dashed rgba(255, 255, 255, 0.06); }
 body.lefty #surface { flex-direction: row-reverse; }
-body.lefty .zone + .zone::before { left: auto; right: -1px; }
+body.lefty .zone + .zone { border-left: 0; border-right: 1px dashed rgba(255, 255, 255, 0.06); }
 
 .zone .hint {
   position: absolute; left: 50%; bottom: calc(18% + var(--safe-b));
@@ -92,6 +85,46 @@ body.lefty .zone + .zone::before { left: auto; right: -1px; }
 }
 .zone .hint span { font-size: 13px; color: var(--dim); }
 body.show-hints .zone .hint { opacity: 1; }
+/* Control zones (optional, in settings): an outline per control area, kept
+   faint; --zone-opacity comes from the setting. The button side is split, A
+   on top, as the touch code does. */
+.zone .box {
+  position: absolute; inset: 10px 10px calc(10px + var(--safe-b));
+  display: none; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px;
+  padding: 14px 10px;
+  border: 1.5px solid #9aa0ad;
+  border-radius: var(--radius);
+  color: #9aa0ad; text-align: center;
+  /* A dark halo keeps the gray readable over bright game graphics. */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 0 2px #000, 0 0 4px #000;
+  opacity: var(--zone-opacity, 0.25);
+  pointer-events: none;
+}
+.zone .box b {
+  white-space: nowrap;
+  font: 800 12px/1 ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.16em; text-transform: uppercase;
+}
+.zone .box small { font-size: 12px; }
+body.show-zones .zone .box { display: flex; }
+/* Labels sit in each box's outer corner, usually clear of the game picture. */
+.zone.joy .box { align-items: flex-start; text-align: left; }
+.zone.fire .box { align-items: flex-end; text-align: right; }
+body.lefty .zone.joy .box { align-items: flex-end; text-align: right; }
+body.lefty .zone.fire .box { align-items: flex-start; text-align: left; }
+.zone .box.a { bottom: calc(100% - var(--split, 50%) + 5px); }
+.zone .box.b { top: calc(var(--split, 50%) + 5px); }
+/* The outlines keep mostly clear of the picture (see layoutZones in main.js):
+   in portrait they stay in the band below it, A taking the band's upper half;
+   in landscape they stop short of the middle line by --left-inner /
+   --right-inner. */
+body.portrait .zone .box.stick, body.portrait .zone .box.a { top: calc(var(--band-top, 0px) + 10px); }
+.zone.joy .box { right: calc(10px + var(--left-inner, 0px)); }
+.zone.fire .box { left: calc(10px + var(--right-inner, 0px)); }
+body.lefty .zone.joy .box { right: 10px; left: calc(10px + var(--right-inner, 0px)); }
+body.lefty .zone.fire .box { left: 10px; right: calc(10px + var(--left-inner, 0px)); }
+.zone .hint { z-index: 1; }
 
 #dpad {
   --size: 140px;

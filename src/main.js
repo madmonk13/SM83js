@@ -17,6 +17,9 @@ const DEFAULTS = {
   dpadSize: 140,
   haptics: true,
   hints: true,
+  zones: true,       // outline each control's area
+  zoneOpacity: 25,   // percent
+  zoneOverlap: 25,   // percent: how far the control zones reach over the picture
   sound: true,
   volume: 70,        // percent
   resume: true,      // pick games up where they were left
@@ -239,6 +242,11 @@ function applyControls() {
   const ctrl = settings.eightWay ? '8' : '4';
   for (const b of document.querySelectorAll('[data-ctrl]')) b.classList.toggle('active', b.dataset.ctrl === ctrl);
   for (const b of document.querySelectorAll('[data-shade]')) b.classList.toggle('active', b.dataset.shade === settings.shade);
+  document.body.classList.toggle('show-zones', settings.zones);
+  document.documentElement.style.setProperty('--zone-opacity', settings.zoneOpacity / 100);
+  $('zoneOpacityVal').textContent = `${settings.zoneOpacity}%`;
+  $('zoneOpacity').disabled = !settings.zones;
+  $('zoneOverlapVal').textContent = `${settings.zoneOverlap}%`;
 }
 
 function syncMenu() {
@@ -246,6 +254,9 @@ function syncMenu() {
   $('dpadSize').value = settings.dpadSize;
   $('haptics').checked = settings.haptics;
   $('hints').checked = settings.hints;
+  $('zones').checked = settings.zones;
+  $('zoneOpacity').value = settings.zoneOpacity;
+  $('zoneOverlap').value = settings.zoneOverlap;
   $('sound').checked = settings.sound;
   $('volume').value = settings.volume;
   $('resume').checked = settings.resume;
@@ -264,7 +275,7 @@ function flashHints(ms) {
 }
 
 $('leftHanded').addEventListener('change', (e) => {
-  settings.leftHanded = e.target.checked; applyControls(); save(); flashHints(2500);
+  settings.leftHanded = e.target.checked; applyControls(); layout2D(); save(); flashHints(2500);
 });
 for (const b of document.querySelectorAll('[data-ctrl]')) {
   b.addEventListener('click', () => { settings.eightWay = b.dataset.ctrl === '8'; applyControls(); save(); });
@@ -275,6 +286,9 @@ for (const b of document.querySelectorAll('[data-shade]')) {
     if (gb.cart && !gb.cgb) { gb.runFrame(); drawNow(); }   // show the new tint even while paused
   });
 }
+$('zones').addEventListener('change', (e) => { settings.zones = e.target.checked; applyControls(); save(); });
+$('zoneOpacity').addEventListener('input', (e) => { settings.zoneOpacity = +e.target.value; applyControls(); save(); });
+$('zoneOverlap').addEventListener('input', (e) => { settings.zoneOverlap = +e.target.value; applyControls(); layout2D(); save(); });
 $('dpadSize').addEventListener('input', (e) => { settings.dpadSize = +e.target.value; applyControls(); save(); });
 $('haptics').addEventListener('change', (e) => {
   settings.haptics = e.target.checked; applyControls(); save();
@@ -382,9 +396,38 @@ function layout2D() {
   c.style.left = `${sl + pad + (availW - w) / 2}px`;
   const top = portrait ? barH + 4 : st + (availH - h) / 2;
   c.style.top = `${top}px`;
-  // The zone dividers start below the picture (relative to the touch surface).
-  const surfaceTop = $('surface').getBoundingClientRect().top;
-  $('surface').style.setProperty('--divider-top', `${Math.max(0, top + h - surfaceTop + 8)}px`);
+  const left = sl + pad + (availW - w) / 2;
+  layoutZones(portrait, { left, top, right: left + w, bottom: top + h, w, h });
+}
+
+// The control zones keep mostly clear of the picture: they reach over its
+// edge by the overlap setting's share of its size. In portrait the zones sit
+// in the band below the picture (starting that far up it), the button side
+// split there with A on top and B below; above the band still counts as A.
+// In landscape A takes the top half and B the bottom, and the outlines stop
+// short of the middle line where the picture is.
+const MIN_ZONE = 80;   // px: a landscape zone never gets narrower than this
+function layoutZones(portrait, pic) {
+  const sr = $('surface').getBoundingClientRect(), style = $('surface').style;
+  const k = settings.zoneOverlap / 100, mid = sr.left + sr.width / 2;
+  document.body.classList.toggle('portrait', portrait);
+  if (portrait) {
+    const band = Math.max(sr.top, pic.bottom - pic.h * k), split = (band + sr.bottom) / 2;
+    touch.splitY = split;
+    style.setProperty('--band-top', `${band - sr.top}px`);
+    style.setProperty('--split', `${split - sr.top}px`);
+    style.setProperty('--left-inner', '0px');
+    style.setProperty('--right-inner', '0px');
+  } else {
+    // How far each side's zone stops short of the middle line.
+    const room = sr.width / 2 - MIN_ZONE, reach = (pic.w / 2) * k;
+    const leftInner = Math.min(room, Math.max(0, mid - (pic.left + reach)));
+    const rightInner = Math.min(room, Math.max(0, (pic.right - reach) - mid));
+    touch.splitY = sr.top + sr.height / 2;
+    style.setProperty('--split', `${sr.height / 2}px`);
+    style.setProperty('--left-inner', `${leftInner}px`);
+    style.setProperty('--right-inner', `${rightInner}px`);
+  }
 }
 // Rotating can leave iOS with the page scrolled or zoomed a little, which shifts
 // where taps land relative to what's drawn. Snap back after every resize, and
