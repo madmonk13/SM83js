@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sm83js",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd /Volumes/Documents/Dev/SM83js && exec python3 -m http.server 2602"],
+      "port": 2602,
+      "autoPort": false
+    }
+  ]
+}

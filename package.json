@@ -1,0 +1,12 @@
+{
+  "name": "sm83js",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Touch-first Game Boy and Game Boy Color emulator for phones and desktop",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 2602",
+    "rom": "node tools/run-rom.mjs",
+    "icons": "node tools/make-icons.mjs"
+  }
+}
