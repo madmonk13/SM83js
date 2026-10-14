@@ -515,3 +515,11 @@ window.gb = gb;
 window.touch = touch;
 window.input = input;
 window.audio = audio;
+
+// Offline support: the service worker (sw.js, written by tools/build-sw.mjs)
+// caches the app so it runs without a network once installed. Browsers only
+// allow it on https or localhost.
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  const register = () => navigator.serviceWorker.register('sw.js').catch(() => {});
+  if (document.readyState === 'complete') register(); else window.addEventListener('load', register);
+}
