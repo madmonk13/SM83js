@@ -64,6 +64,11 @@ fine). No ROMs are included.
   Start; Shift or Backspace for Select; P to pause.
 - **Gamepad:** d-pad or left stick; the right face button is A and the bottom
   one B (Nintendo layout); Start and Back/Select.
+- **Hints follow how you play.** On a phone or tablet the control zones show; on a computer, or as
+  soon as you press a key or a gamepad button, they're replaced by a card listing the keys (or
+  gamepad buttons), shown as a game starts and while it's paused, and the same list is in
+  Settings › Controls. Touching the screen brings the zones back. **Hints for** in Settings fixes
+  it to Touch, Keys or Pad instead of Auto. A gamepad's Start button also resumes a paused game.
 
 ## Testing
 
