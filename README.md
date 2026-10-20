@@ -9,6 +9,8 @@ installable web app.
 Named for the Sharp SM83, the CPU core inside the Game Boy's LR35902 and the
 Game Boy Color's CPU.
 
+**Play it:** [madmonk13.github.io/SM83js](https://madmonk13.github.io/SM83js/)
+
 ## Offline and install
 
 The app is a PWA: open it once while online and a service worker (`sw.js`) caches it, so it then
